@@ -1,0 +1,324 @@
+local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
+if not (vim.uv or vim.loop).fs_stat(lazypath) then
+  local out = vim.fn.system({
+    "git",
+    "clone",
+    "--filter=blob:none",
+    "--branch=stable",
+    "https://github.com/folke/lazy.nvim.git",
+    lazypath,
+  })
+  if vim.v.shell_error ~= 0 then
+    vim.api.nvim_echo({
+      { "Błąd klonowania lazy.nvim:\n", "ErrorMsg" },
+      { out, "WarningMsg" },
+      { "\nWciśnij dowolny klawisz, aby wyjść..." },
+    }, true, {})
+    vim.fn.getchar()
+    os.exit(1)
+  end
+end
+vim.opt.rtp:prepend(lazypath)
+
+
+vim.opt.tabstop = 4      -- Szerokość tabulatora
+vim.opt.shiftwidth = 4   -- Szerokość wcięcia (np. po klamrach)
+vim.opt.expandtab = true  -- Zamieniaj tabulatory na spacje
+vim.opt.softtabstop = 4  -- Ułatwia usuwanie 4 spacji naraz
+vim.opt.number = true -- Ustawia widoczność numerów lini
+vim.opt.splitright = true
+vim.opt.splitbelow = true
+
+vim.g.loaded_netrw = 1
+vim.g.loaded_netrwPlugin = 1
+
+vim.g.mapleader = " "
+vim.g.maplocalleader = " "
+
+-- DOPIERO TUTAJ wywołuj require
+require("lazy").setup({
+  -- Motyw Visual Studio (Dark Modern)
+  { 'Mofiqul/vscode.nvim' },
+  { 'sainnhe/everforest'},
+  { 'stevearc/oil.nvim'},
+  -- Zarządzanie serwerami LSP (Mason)
+  { "williamboman/mason.nvim" },
+  { 
+      "williamboman/mason-lspconfig.nvim",
+      opts = {ensure_installed = "rust-analyzer"}
+  },
+  { "neovim/nvim-lspconfig" },
+  { "ziglang/zig.vim" },
+  -- Autouzupełnianie (jak w VS Code)
+  { "hrsh7th/nvim-cmp" },
+  { "hrsh7th/cmp-nvim-lsp" },
+  { "hrsh7th/cmp-buffer" },
+  { "hrsh7th/cmp-path" },
+  { "L3MON4D3/LuaSnip" },
+  {
+      'windwp/nvim-autopairs',
+      event = 'InsertEnter',
+      config = true
+  },
+  {
+      'nvim-lualine/lualine.nvim',
+      requires = {'nvim-tree/nvim-web-devicons', opt = true }
+  },
+
+  -- Podświetlanie składni C++
+  { "nvim-treesitter/nvim-treesitter", build = ":TSUpdate" }
+})
+
+require("oil").setup({
+      -- Czy Oil ma być domyślnym eksploratorem (zamiast netrw)
+      default_file_explorer = true,
+      
+      -- Kolumny wyświetlane w widoku plików
+      columns = {
+        "icon",
+        -- "permissions",
+        -- "size",
+        -- "mtime",
+      },
+      
+      -- Konfiguracja okna pływającego (używane przy require("oil").toggle_float())
+      float = {
+        padding = 2,
+        max_width = 0,
+        max_height = 0,
+        border = "rounded", -- "double", "single", "shadow"
+      },
+
+      -- Opcje widoku
+      view_options = {
+        -- Pokaż ukryte pliki (dotfiles) domyślnie
+        show_hidden = true,
+        -- Możesz zdefiniować, jakie pliki mają być pomijane
+        is_always_hidden = function(name, bufnr)
+          return name == ".." or name == ".git"
+        end,
+      },
+
+      -- Skróty klawiszowe wewnątrz okna Oil
+      keymaps = {
+        ["g?"] = "actions.show_help",
+        ["<CR>"] = "actions.select",
+        ["<C-s>"] = "actions.select_vsplit", -- Otwórz w pionowym podziale
+        ["<C-h>"] = "actions.select_split",  -- Otwórz w poziomym podziale
+        ["<C-p>"] = "actions.preview",       -- Podgląd pliku w okienku
+        ["<C-c>"] = "actions.close",
+        ["-"] = "actions.parent",            -- Przejdź folder wyżej
+        ["_"] = "actions.open_cwd",          -- Otwórz folder roboczy projektu
+        ["gs"] = "actions.change_sort",      -- Zmień sposób sortowania
+        ["gx"] = "actions.open_external",    -- Otwórz plik w systemowym programie
+        ["g."] = "actions.toggle_hidden",    -- Przełącz widoczność ukrytych plików
+      },
+    })
+
+    -- Twoje skróty klawiszowe do wywoływania Oil
+    vim.keymap.set("n", "-", "<CMD>Oil<CR>", { desc = "Otwórz folder nadrzędny" })
+    vim.keymap.set("n", "<leader>e", function() require("oil").toggle_float() end, { desc = "Eksplorator plików (pływający)" })
+
+require('lualine').setup 
+{
+    options = 
+    {
+        icons_enabled = true,
+        theme = 'auto',
+        component_sepators = {left = '', right = ''},
+        section_separators = {left = '', right = ''},
+        disabled_filetypes = 
+        {
+            statusline = {},
+            winbar = {}
+        },
+    },
+    ignore_focus = {},
+    always_divide_middle = true,
+    alway_show_tabline = true,
+    globalstatus = false,
+    refresh = 
+    {
+        statusline = 1000,
+        tabline = 1000,
+        winbar = 1000,
+        refresh_time = 16,
+        events = 
+        {
+            'WinEnter',
+            'BufEnter',
+            'BufWritePost',
+            'SessionLoadPost',
+            'FileChangedShellPost',
+            'VimResized',
+            'Filetype',
+            'CursorMoved',
+            'ModeChanged',
+        }
+    },
+    sections = 
+    {
+        lualine_a = {'mode'},
+        lualine_b = {'branch', 'diff', 'diagnostics'},
+        lualine_c = {'filename'},
+        lualine_x = {'encoding', 'fileFormat', 'filetype'},
+        lualine_y = {'progress'},
+        lualine_z = {'location'}
+    },
+    inaction_sections = 
+    {
+        lualine_a = {},
+        lualine_b = {},
+        lualine_c = {'filename'},
+        lualine_x = {'location'},
+        lualine_y = {},
+        lualine_z = {}       
+    },
+    tabline = {},
+    winbar = {},
+    inactive_winbar = {},
+    extensions = {}
+}
+
+require("nvim-treesitter.install").prefer_git = true
+
+require("nvim-treesitter").setup({
+    ensure_installed = {"c", "cpp", "rust", "lua", "vim", "vimdoc", "query"},
+    sync_install = false,
+    auto_install = true,
+
+    highlight = {
+        enable = true,
+        additional_vim_regex_highlighting = false,
+    },
+    indent = {
+        enable = true,
+    },
+})
+
+require("nvim-autopairs").setup({
+    check_ts = true
+})
+
+-- Aktywacja motywu Visual Studio
+vim.g.everforest_background = 'medium'
+
+vim.g.everforest_enable_italic_comments = 1
+
+vim.cmd[[colorscheme everforest]]
+
+local capabilities = require('cmp_nvim_lsp').default_capabilities()
+
+vim.lsp.config('clangd', {
+    cmd = {
+        "clangd",
+        "--background-index",
+        "--clang-tidy",
+        "--header-insertion=iwyu",
+        "--offset-encoding=utf-16",
+    },
+    capabilities = capabilities, -- Poprawiona literówka
+    on_attach = function(client, bufnr)
+        -- Poprawiona literówka: inlayHintProvider
+        if client.server_capabilities.inlayHintProvider then
+            vim.lsp.inlay_hint.enable(true, { bufnr = bufnr })
+        end
+    end,
+    filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+})
+
+vim.lsp.config('zls', {
+    cmd = {'zls'},
+    filetypes = {'zig', 'zir'},
+    root_makers = {'build.zig', 'zls.json', '.git'},
+    settings = {
+        zls = {
+            enable_autofix = true,
+            warn_style = true,
+        }
+    }
+})
+
+vim.lsp.config("rust-analyzer", {
+    cmd = { vim.fn.stdpath("data") .. "/mason/bin/rust-analyzer"},
+    filetypes = {'rs', 'rust'},
+    root_makers = {'Cargo.toml', ".git"},
+    capabilities = capabilities,
+    settings = {
+        ["rust-analyzer"] = {
+            checkOnSave = {command = "clippy"},
+        },
+    },
+})
+
+-- Uruchomienie serwera
+vim.lsp.enable('clangd')
+vim.lsp.enable('zls')
+vim.lsp.enable('rust-analyzer');
+
+vim.lsp.inlay_hint.enable(true)
+
+local cmp = require('cmp')
+
+
+local cmp = require('cmp')
+local luasnip = require('luasnip')
+
+cmp.setup({
+    snippet = {
+        expand = function(args)
+            luasnip.lsp_expand(args.body)
+        end,
+    },
+    mapping = cmp.mapping.preset.insert({
+        ['<C-b>'] = cmp.mapping.scroll_docs(-4),
+        ['<C-f>'] = cmp.mapping.scroll_docs(4),
+        ['<Tab>'] = cmp.mapping(function(fallback)
+            if cmp.visible() then
+                cmp.confirm({ select = true })
+            elseif luasnip.expand_or_jumpable() then
+                luasnip.expand_or_jump()
+            else
+                fallback()
+            end
+        end, { 'i', 's' }),
+        ['<S-Tab>'] = cmp.mapping(function(fallback) -- Dodano brakujące < >
+            if cmp.visible() then
+                cmp.select_prev_item()
+            elseif luasnip.jumpable(-1) then
+                luasnip.jump(-1)
+            else
+                fallback()
+            end
+        end, { 'i', 's' }),
+    }), -- Koniec mappingów
+    sources = cmp.config.sources({
+        { name = 'nvim_lsp' }, -- Poprawione: nvim_lsp (z podkreślnikiem)
+        { name = 'luasnip' },
+    }, {
+        { name = 'buffer' },
+        { name = 'path' },
+    })
+}) 
+
+
+vim.diagnostic.config({
+    virtual_text = {
+        prefix = '●', -- Znak przed błędem
+        spacing = 4,   -- Odstęp od kodu
+    },
+    update_in_insert = true, -- Sprawdzaj błędy nawet podczas pisania (nie czekaj na wyjście z trybu Insert)
+    underline = true,        -- Podkreślaj błędy w kodzie
+    severity_sort = true,    -- Najpierw pokazuj najważniejsze błędy (Error przed Warning)
+})
+
+-- Automatyczne okienko z błędem po krótkiej chwili bezruchu
+vim.api.nvim_create_autocmd("CursorHold", {
+    callback = function()
+        vim.diagnostic.open_float(nil, { focusable = false })
+    end,
+})
+
+-- Ustaw czas oczekiwania na 300ms (domyślnie jest to 4 sekundy, co jest za wolne)
+vim.opt.updatetime = 300
+
