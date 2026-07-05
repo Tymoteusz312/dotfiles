@@ -40,6 +40,8 @@ vim.g.loaded_netrwPlugin = 1
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
+vim.o.shell = '/usr/bin/zsh'
+
 -- ========================================================================== --
 -- 3. DEKLARACJA WTYCZEK W LAZY.NVIM                                         --
 -- ========================================================================== --
@@ -305,6 +307,12 @@ vim.lsp.inlay_hint.enable(true)
 -- ========================================================================== --
 vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Idź do definicji" })
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Pokaz dokumentację pod kursem" })
+
+vim.keymap.set("n", '<C-t>', ':botright 10split | term<CR>', { silent = true })
+
+vim.keymap.set("t", '<Esc>', [[<C-\><C-n>]], { silent = true })
+vim.keymap.set("t", '<C-X>', [[<C-\><C-n>:q<CR>]], { silent = true })
+
 
 -- ========================================================================== --
 -- 8. KONFIGURACJA AUTOUZUPEŁNIANIA (NVIM-CMP & LUASNIP)                     --
