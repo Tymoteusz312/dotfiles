@@ -18,6 +18,10 @@ alias ll='eza -l --color=always --group-directories-first --icons'
 alias lt='eza -aT --color=always --group-directories-first --icons'
 alias l.="eza -a | grep -e '^\.'"
 
+alias gs='git status'
+
+alias nv='nvim'
+
 runapp(){
     nohup "$1" > /dev/null 2>&1 &
 }
