@@ -25,3 +25,5 @@ alias nv='nvim'
 runapp(){
     nohup "$1" > /dev/null 2>&1 &
 }
+
+compinit -d ~/.cache/zcompdump-"$ZSH_VERSION"

@@ -34,6 +34,8 @@ vim.opt.number = true    -- Ustawia widoczność numerów linii
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
+vim.opt.clipboard = "unnamedplus"
+
 vim.g.loaded_netrw = 1
 vim.g.loaded_netrwPlugin = 1
 
@@ -56,13 +58,14 @@ require("lazy").setup({
   -- Wyszukiwarka plików i tekstu (Telescope)
   {
     'nvim-telescope/telescope.nvim',
-    branch = 'master',
+    -- branch = 'master',
+    version = false,
     dependencies = { 'nvim-lua/plenary.nvim' },
     config = function()
       local builtin = require('telescope.builtin')
-      vim.keymap.set('n', '<leader>ff', builtin.find_files, { desc = "Szukaj plików w projekcie" })
-      vim.keymap.set('n', '<leader>fg', builtin.live_grep, { desc = "Szukaj tekstu w plikach" })
-      vim.keymap.set('n', '<leader>fb', builtin.buffers, { desc = "Lista otwartych kart" })
+      vim.keymap.set('n', '<leader>f', builtin.find_files, { desc = "Szukaj plików w projekcie" })
+      vim.keymap.set('n', '<leader>g', builtin.live_grep, { desc = "Szukaj tekstu w plikach" })
+      vim.keymap.set('n', '<leader>b', builtin.buffers, { desc = "Lista otwartych kart" })
     end
   },
   -- Błyskawiczne komentowanie kodu (Comment.nvim)
@@ -82,7 +85,7 @@ require("lazy").setup({
   },
 
   -- Główny silnik Mason
-  { 
+{ 
     "williamboman/mason.nvim", 
     config = function()
       require("mason").setup()
@@ -179,8 +182,8 @@ require("oil").setup({
   keymaps = {
     ["g?"] = "actions.show_help",
     ["<CR>"] = "actions.select",
-    ["<C-s>"] = "actions.select_vsplit",
-    ["<C-h>"] = "actions.select_split",
+    ["<C-v>"] = "actions.select_vsplit",
+    ["<C-x>"] = "actions.select_split",
     ["<C-p>"] = "actions.preview",
     ["<C-c>"] = "actions.close",
     ["-"] = "actions.parent",
@@ -309,6 +312,17 @@ vim.keymap.set("n", "gd", vim.lsp.buf.definition, { desc = "Idź do definicji" }
 vim.keymap.set("n", "K", vim.lsp.buf.hover, { desc = "Pokaz dokumentację pod kursem" })
 
 vim.keymap.set("n", '<C-t>', ':botright 10split | term<CR>i', { silent = true })
+
+vim.keymap.set("n", "<Leader>t", ":tabnew | terminal<CR>i", {desc = "Otworz terminal w nowym tabie"})
+
+vim.keymap.set("n", '<C-h>', '<C-w>h', {desc = 'Przejsc do okna po lewej'})
+vim.keymap.set("n", '<C-j>', '<C-w>j', {desc = 'Przejsc do okna na dole'})
+vim.keymap.set("n", '<C-k>', '<C-w>k', {desc = 'Przejsc do okna na gurze'})
+vim.keymap.set("n", '<C-l>', '<C-w>l', {desc = 'Przejsc do okna po prawej'})
+
+vim.keymap.set("n", "<M-h>", ":tabprevious<CR>", {desc = "Poprzedni tab"})
+vim.keymap.set("n", "<M-l>", ":tabnext<CR>", {desc = "Nastepny tab"})
+vim.keymap.set("n", "tt", ":tabnext<CR>", {desc = "Nastepny tab"})
 
 vim.keymap.set("t", '<Esc>', [[<C-\><C-n>]], { silent = true })
 vim.keymap.set("t", '<C-X>', [[<C-\><C-n>:q<CR>]], { silent = true })
