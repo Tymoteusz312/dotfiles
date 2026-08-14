@@ -1,0 +1,7 @@
+
+theme = Everforest Dark Medium
+command = /usr/bin/zsh -l -i
+
+font-feature = -calt
+font-feature = -dlig
+font-feature = -liga

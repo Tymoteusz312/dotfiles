@@ -34,6 +34,9 @@ vim.opt.number = true    -- Ustawia widoczność numerów linii
 vim.opt.splitright = true
 vim.opt.splitbelow = true
 
+vim.opt.laststatus = 3
+vim.opt.cmdheight = 0
+
 vim.opt.clipboard = "unnamedplus"
 
 vim.g.loaded_netrw = 1
